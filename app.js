@@ -192,7 +192,11 @@ function applyTheme(theme) {
 }
 
 function initSettings() {
-  $('commercialRate').value = state.settings.commercialRate; $('fundRate').value = state.settings.fundRate; $('themeSelect').value = state.settings.theme; applyTheme(state.settings.theme);
+  $('commercialRate').value = state.settings.commercialRate;
+  $('fundRate').value = state.settings.fundRate;
+  $('themeSelect').value = state.settings.theme;
+  els.annualRate.value = state.loanType === 'fund' ? state.settings.fundRate : state.settings.commercialRate;
+  applyTheme(state.settings.theme);
 }
 
 els.housePrice.addEventListener('input', updateLoanAmount);
