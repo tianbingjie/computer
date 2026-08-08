@@ -209,7 +209,10 @@ $('clearHistory').addEventListener('click', () => { if (confirm('确定清空全
 $('themeSelect').addEventListener('change', event => applyTheme(event.target.value));
 $('saveSettings').addEventListener('click', () => {
   state.settings = { commercialRate: Math.max(0, Number($('commercialRate').value) || 0), fundRate: Math.max(0, Number($('fundRate').value) || 0), theme: $('themeSelect').value };
-  localStorage.setItem('mortgage-settings', JSON.stringify(state.settings)); applyTheme(state.settings.theme);
+  localStorage.setItem('mortgage-settings', JSON.stringify(state.settings));
+  els.annualRate.value = state.loanType === 'fund' ? state.settings.fundRate : state.settings.commercialRate;
+  applyTheme(state.settings.theme);
+  calculate(false);
   $('saveNotice').classList.add('show'); setTimeout(() => $('saveNotice').classList.remove('show'), 1600);
 });
 
