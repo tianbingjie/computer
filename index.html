@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="房贷计算器">
+  <meta name="description" content="简洁、离线可用的 iPhone 房贷计算器">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <title>房贷计算器</title>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">MORTGAGE</p>
+        <h1 id="pageTitle">房贷计算器</h1>
+      </div>
+      <div class="brand-mark" aria-hidden="true">¥</div>
+    </header>
+
+    <main>
+      <section class="page active" id="calculatorPage" data-page="calculator">
+        <div class="segmented" role="group" aria-label="贷款类型">
+          <button class="segment active" type="button" data-loan-type="commercial">商业贷款</button>
+          <button class="segment" type="button" data-loan-type="fund">公积金贷款</button>
+        </div>
+
+        <section class="card form-card" aria-labelledby="loanInfoTitle">
+          <div class="section-heading">
+            <h2 id="loanInfoTitle">贷款信息</h2><span class="pill" id="loanTypePill">商业贷款</span>
+          </div>
+          <label class="field"><span>房屋总价</span><span class="input-wrap"><b>¥</b><input id="housePrice" type="number" inputmode="decimal" min="0" step="10000" value="3000000" aria-label="房屋总价"></span></label>
+          <label class="field"><span>首付款金额</span><span class="input-wrap"><b>¥</b><input id="downPayment" type="number" inputmode="decimal" min="0" step="10000" value="900000" aria-label="首付款金额"></span></label>
+          <div class="field readonly"><span>贷款金额</span><strong id="loanAmount">¥2,100,000</strong></div>
+          <label class="field"><span>贷款年限</span><select id="loanYears" aria-label="贷款年限"><option>5</option><option>10</option><option>15</option><option>20</option><option>25</option><option selected>30</option></select></label>
+          <label class="field"><span>年利率</span><span class="input-wrap suffix"><input id="annualRate" type="number" inputmode="decimal" min="0" max="30" step="0.01" value="3.50" aria-label="年利率"><b>%</b></span></label>
+          <div class="method-field">
+            <span>还款方式</span>
+            <div class="method-switch" role="group" aria-label="还款方式">
+              <button class="method-button active" type="button" data-method="annuity">等额本息</button>
+              <button class="method-button" type="button" data-method="equalPrincipal">等额本金</button>
+            </div>
+          </div>
+          <p class="form-error" id="formError" role="alert"></p>
+          <button class="primary-button" id="calculateButton" type="button">开始计算</button>
+        </section>
+
+        <section class="card result-card" id="resultCard" aria-live="polite">
+          <p class="result-label" id="paymentLabel">每月还款</p><p class="hero-value" id="monthlyPayment">¥0.00</p>
+          <div class="result-grid">
+            <div><span>总还款</span><strong id="totalPayment">¥0.00</strong></div><div><span>支付利息</span><strong id="totalInterest">¥0.00</strong></div>
+            <div><span>首付金额</span><strong id="resultDownPayment">¥0.00</strong></div><div><span>贷款本金</span><strong id="resultPrincipal">¥0.00</strong></div>
+          </div>
+        </section>
+
+        <section class="card prepayment-card">
+          <div class="section-heading"><div><h2>提前还款模拟</h2><p>比较两种常见处理方式</p></div></div>
+          <label class="field"><span>提前还款金额</span><span class="input-wrap"><b>¥</b><input id="prepaymentAmount" type="number" inputmode="decimal" min="0" step="10000" value="200000"></span></label>
+          <label class="field"><span>还款发生在</span><span class="input-wrap suffix"><input id="prepaymentMonth" type="number" inputmode="numeric" min="1" value="12"><b>期后</b></span></label>
+          <button class="secondary-button" id="simulateButton" type="button">模拟提前还款</button>
+          <p class="form-error" id="prepaymentError" role="alert"></p>
+          <div class="simulation-results hidden" id="simulationResults">
+            <article><span>缩短期限 · 月供不变</span><strong id="shortenSaving">节省利息 ¥0</strong><small id="shortenEffect">—</small></article>
+            <article><span>期限不变 · 降低月供</span><strong id="reduceSaving">节省利息 ¥0</strong><small id="reduceEffect">—</small></article>
+          </div>
+        </section>
+
+        <section class="card schedule-card">
+          <div class="section-heading"><div><h2>还款计划</h2><p id="scheduleSummary">前 12 期</p></div><button class="text-button" id="scheduleToggle" type="button">查看全部</button></div>
+          <div class="table-scroll" tabindex="0"><table><thead><tr><th>期数</th><th>月供</th><th>本金</th><th>利息</th><th>剩余</th></tr></thead><tbody id="scheduleBody"></tbody></table></div>
+          <button class="secondary-button export-button" id="exportButton" type="button">导出 CSV</button>
+        </section>
+      </section>
+
+      <section class="page" id="historyPage" data-page="history">
+        <section class="card history-card"><div class="section-heading"><div><h2>最近计算</h2><p>数据仅保存在这台设备</p></div><button class="text-button danger" id="clearHistory" type="button">清空</button></div><div id="historyList" class="history-list"></div></section>
+      </section>
+
+      <section class="page" id="settingsPage" data-page="settings">
+        <section class="card settings-card">
+          <div class="section-heading"><div><h2>偏好设置</h2><p>利率会用于切换贷款类型</p></div></div>
+          <label class="field"><span>商业贷款默认利率</span><span class="input-wrap suffix"><input id="commercialRate" type="number" inputmode="decimal" min="0" step="0.01"><b>%</b></span></label>
+          <label class="field"><span>公积金默认利率</span><span class="input-wrap suffix"><input id="fundRate" type="number" inputmode="decimal" min="0" step="0.01"><b>%</b></span></label>
+          <label class="field"><span>外观</span><select id="themeSelect"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select></label>
+          <button class="primary-button" id="saveSettings" type="button">保存设置</button><p class="save-notice" id="saveNotice">设置已保存</p>
+        </section>
+        <section class="card about-card"><div class="app-icon">¥</div><div><h2>房贷计算器</h2><p>所有计算均在本机完成，不会上传任何数据。</p></div></section>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="主导航">
+      <button class="nav-item active" type="button" data-target="calculator"><span class="nav-icon">⌂</span><span>计算</span></button>
+      <button class="nav-item" type="button" data-target="history"><span class="nav-icon">◷</span><span>记录</span></button>
+      <button class="nav-item" type="button" data-target="settings"><span class="nav-icon">⚙</span><span>设置</span></button>
+    </nav>
+  </div>
+  <script src="app.js" defer></script>
+</body>
+</html>
