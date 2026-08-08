@@ -10,7 +10,7 @@ const els = {
   simulationResults: $('simulationResults'), historyList: $('historyList')
 };
 
-const DEFAULT_SETTINGS = { commercialRate: 3.5, fundRate: 2.85, theme: 'system' };
+const DEFAULT_SETTINGS = { commercialRate: 3.0, fundRate: 2.85, theme: 'system' };
 const state = { loanType: 'commercial', repaymentMethod: 'annuity', schedule: [], showAll: false, latest: null, settings: loadJSON('mortgage-settings', DEFAULT_SETTINGS) };
 const money = new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', minimumFractionDigits: 2 });
 const compactMoney = new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY', maximumFractionDigits: 0 });
